@@ -1,0 +1,9 @@
+.login-div {
+  margin: 9.375rem auto;
+  width: 25rem;
+}
+body {
+  background-color: #f0f0f0;
+  overflow: scroll;
+  overflow-y: hidden;
+}
