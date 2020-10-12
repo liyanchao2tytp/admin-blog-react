@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Button, Input, Card, Spin } from "antd";
 import { KeyOutlined, UserOutlined } from "@ant-design/icons";
 import '../static/css/login.css'
+import servicePath from '../config/apiUrl'
 export default function Login() {
   const [userName, setUserName] = useState("");
   const [passWord, setPassWord] = useState("");
