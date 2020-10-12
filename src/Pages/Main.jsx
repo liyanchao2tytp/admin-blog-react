@@ -8,7 +8,7 @@ export default function Main() {
       <Switch>
         <Redirect exact from="/" to="/login"></Redirect>
         <Route path="/login/" exact component={Login}></Route>
-        <Route path="/admin" component={AdminIndex}></Route>
+        <Route path="/index" component={AdminIndex}></Route>
       </Switch>
     </Router>
   );

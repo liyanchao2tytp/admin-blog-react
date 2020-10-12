@@ -8,6 +8,8 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import '../static/css/AdminIndex.css'
+import AddArticle from './AddArticle'
+import { Route } from 'react-router-dom'
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
 
@@ -15,10 +17,8 @@ function AdminIndex() {
   const [collapsed, setCollapsed] = useState(false)
 
   const onCollapse = collapsed => {
-    console.log(collapsed);
-    this.setState({ collapsed });
+    setCollapsed( collapsed );
   };
-
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
@@ -49,8 +49,9 @@ function AdminIndex() {
             <Breadcrumb.Item>工作台</Breadcrumb.Item>
           </Breadcrumb>
           <div className="site-layout-background" style={{ padding: 24, minHeight: 360 }}>
-            我的个人博客
-            </div>
+
+            <Route path='/index' exact component={AddArticle}></Route>
+          </div>
         </Content>
         <Footer style={{ textAlign: 'center' }}>Ant Design + React</Footer>
       </Layout>
