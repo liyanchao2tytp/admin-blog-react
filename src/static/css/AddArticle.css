@@ -51,7 +51,7 @@
   border:1px solid #ddd;
   border-radius: 5px;
   font-size:16px;
-
+  min-height: 7.5rem;
   background-color: #f0f0f0;
 }
 
@@ -92,4 +92,7 @@
 }
 .date-select{
   margin-top:10px;
+}
+.article_title{
+ width:40px;
 }
