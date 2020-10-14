@@ -4,6 +4,6 @@
 }
 body {
   background-color: #f0f0f0;
-  overflow: scroll;
-  overflow-y: hidden;
+  /* overflow: scroll;
+  overflow-y: hidden; */
 }

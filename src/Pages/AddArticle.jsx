@@ -61,7 +61,6 @@ function AddArticle(props) {
   };
 
   const getTypeInfo = () => {
-    console.log(servicePath.getTypeInfo);
     axios({
       method: "get",
       url: servicePath.getTypeInfo,
@@ -77,7 +76,7 @@ function AddArticle(props) {
   };
 
   const saveArticle = () => {
-    if (selectedType == "文章类型") {
+    if (selectedType === "文章类型") {
       message.error("必须选择文章类型");
       return false;
     } else if (!articleTitle) {
@@ -93,16 +92,57 @@ function AddArticle(props) {
       message.error("发布日期不能为空");
       return false;
     }
-    message.success("文章发布");
+
+    // let dateText = showDate.replace(/-/g, "/");
+
+    let dataProps = {};
+    dataProps.type_id = selectedType;
+    dataProps.title = articleTitle;
+    dataProps.article_content = articleContent;
+    dataProps.intro = introducemd;
+    dataProps.addTime = new Date(showDate).getTime() / 1000;
+    if (articleId === 0) {
+      dataProps.view_count = 0;
+      axios({
+        method: "post",
+        url: servicePath.addArticle,
+        data: dataProps,
+        withCredentials: true,
+      }).then((res) => {
+        setArticleId(res.data.insertId);
+        if (res.data.isOk) {
+          message.success("文章保存成功");
+        } else {
+          message.error("文章保存失败");
+        }
+      });
+    }else{
+      dataProps.id = articleId
+      axios({
+        method:'post',
+        url:servicePath.updateArticle,
+        header:{ 'Access-Control-Allow-Origin':'*' },
+        data:dataProps,
+        withCredentials:true
+      }).then(res=>{
+        if(res.data.isOk){
+          message.success('文章修改成功')
+        }else{
+          message.error('文章修改失败')
+        }
+      })
+    }
+  };
+
+  const selectTypeHandler = (value) => {
+    setSelectType(value);
   };
 
   return (
     <div>
       <Row gutter={10}>
-        <Col span={20}>
+        <Col span={15}>
           <Input
-
-          
             placeholder="博客标题"
             size="large"
             onChange={(e) => {
@@ -112,7 +152,11 @@ function AddArticle(props) {
         </Col>
         <Col span={4} push={1}>
           <Space size={"middle"}>
-            <Select defaultValue={selectedType} size="large">
+            <Select
+              defaultValue={selectedType}
+              size="large"
+              onChange={selectTypeHandler}
+            >
               {typeInfo.map((item, index) => {
                 return (
                   <Option key={index} value={item.id}>
