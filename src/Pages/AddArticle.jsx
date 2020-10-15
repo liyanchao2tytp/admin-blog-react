@@ -33,6 +33,13 @@ function AddArticle(props) {
 
   useEffect(() => {
     getTypeInfo();
+
+    let id = props.match.params.id;
+    if (id) {
+      setArticleId(id);
+      getArticleById(id);
+    } else {
+    }
   }, []);
 
   const renderer = new marked.Renderer();
@@ -49,6 +56,26 @@ function AddArticle(props) {
       return hljs.highlightAuto(code).value;
     },
   });
+  const getArticleById = (id) => {
+    axios({
+      method: "get",
+      url: `${servicePath.getArticleById}/${id}`,
+      header: { "Access-Control-Allow-Origin": "*" },
+      withCredentials: true,
+    }).then((res) => {
+      setArticleTitle(res.data.data[0].title)
+      setArticleContent(res.data.data[0].content)
+      let html=marked(res.data.data[0].content)
+      setMarkdownContent(html)
+      setIntroducemd(res.data.data[0].intro)
+      let tmpInt = marked(res.data.data[0].intro)
+      setIntroducehtml(tmpInt)
+      setShowDate(res.data.data[0].addTime)
+      // setSelectType(res.data.data[0].typeName)
+
+      console.log(res.data.data);
+    });
+  };
   const changeContent = (e) => {
     setArticleContent(e.target.value);
     let html = marked(e.target.value);
@@ -116,21 +143,21 @@ function AddArticle(props) {
           message.error("文章保存失败");
         }
       });
-    }else{
-      dataProps.id = articleId
+    } else {
+      dataProps.id = articleId;
       axios({
-        method:'post',
-        url:servicePath.updateArticle,
-        header:{ 'Access-Control-Allow-Origin':'*' },
-        data:dataProps,
-        withCredentials:true
-      }).then(res=>{
-        if(res.data.isOk){
-          message.success('文章修改成功')
-        }else{
-          message.error('文章修改失败')
+        method: "post",
+        url: servicePath.updateArticle,
+        header: { "Access-Control-Allow-Origin": "*" },
+        data: dataProps,
+        withCredentials: true,
+      }).then((res) => {
+        if (res.data.isOk) {
+          message.success("文章修改成功");
+        } else {
+          message.error("文章修改失败");
         }
-      })
+      });
     }
   };
 
@@ -145,6 +172,7 @@ function AddArticle(props) {
           <Input
             placeholder="博客标题"
             size="large"
+            value={articleTitle}
             onChange={(e) => {
               setArticleTitle(e.target.value);
             }}
@@ -180,6 +208,7 @@ function AddArticle(props) {
               <TextArea
                 className="markdown-content"
                 rows={35}
+                value={articleContent}
                 placeholder="文章内容"
                 onChange={changeContent}
               />
@@ -203,6 +232,7 @@ function AddArticle(props) {
               <TextArea
                 placeholder="文章简介"
                 onChange={changeIntro}
+                value={introducemd}
                 autoSize={{ minRows: 5 }}
               />
               <br />
@@ -217,6 +247,7 @@ function AddArticle(props) {
                 <DatePicker
                   placeholder="发布日期"
                   size="large"
+                  value={showDate}
                   onChange={(date, dateString) => {
                     setShowDate(dateString);
                   }}
