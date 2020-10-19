@@ -1,9 +1,17 @@
 .login-div {
   margin: 9.375rem auto;
   width: 25rem;
+  color:'white';
+  font-weight:900
 }
 body {
   background-color: #f0f0f0;
   /* overflow: scroll;
   overflow-y: hidden; */
+}
+.ant-card-head-title{
+  color:white;
+  font-weight: bolder;
+  font-size:20px;
+  
 }
