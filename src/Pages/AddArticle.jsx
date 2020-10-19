@@ -12,10 +12,13 @@ import {
   Space,
   DatePicker,
   message,
+  Skeleton,
+  Switch,
 } from "antd";
 import axios from "axios";
 import servicePath from "../config/apiUrl.js";
-
+import moment from "moment";
+import "moment/locale/zh-cn";
 const { Option } = Select;
 const { TextArea } = Input;
 
@@ -27,18 +30,23 @@ function AddArticle(props) {
   const [introducemd, setIntroducemd] = useState(); //简介的markdown内容
   const [introducehtml, setIntroducehtml] = useState("等待编辑"); //简介的html内容
   const [showDate, setShowDate] = useState(); //发布日期
-  const [updateDate, setUpdateDate] = useState(); //修改日志的日期
   const [typeInfo, setTypeInfo] = useState([]); // 文章类别信息
   const [selectedType, setSelectType] = useState("文章类型"); //选择的文章类别
 
+  const [isLoading, setIsLoading] = useState(true);
+
+  let yn_public = 0; // 暂存或者发布文章
+
   useEffect(() => {
     getTypeInfo();
-
     let id = props.match.params.id;
+    console.log(id);
     if (id) {
       setArticleId(id);
+      console.log("进来啦2");
       getArticleById(id);
     } else {
+      setIsLoading(false);
     }
   }, []);
 
@@ -63,17 +71,17 @@ function AddArticle(props) {
       header: { "Access-Control-Allow-Origin": "*" },
       withCredentials: true,
     }).then((res) => {
-      setArticleTitle(res.data.data[0].title)
-      setArticleContent(res.data.data[0].content)
-      let html=marked(res.data.data[0].content)
-      setMarkdownContent(html)
-      setIntroducemd(res.data.data[0].intro)
-      let tmpInt = marked(res.data.data[0].intro)
-      setIntroducehtml(tmpInt)
-      setShowDate(res.data.data[0].addTime)
-      // setSelectType(res.data.data[0].typeName)
+      setArticleTitle(res.data.data[0].title);
+      setArticleContent(res.data.data[0].content);
+      let html = marked(res.data.data[0].content);
+      setMarkdownContent(html);
+      setIntroducemd(res.data.data[0].intro);
+      let tmpInt = marked(res.data.data[0].intro);
+      setIntroducehtml(tmpInt);
+      setShowDate(res.data.data[0].addTime);
+      setSelectType(res.data.data[0].typeName);
 
-      console.log(res.data.data);
+      setIsLoading(false);
     });
   };
   const changeContent = (e) => {
@@ -93,12 +101,13 @@ function AddArticle(props) {
       url: servicePath.getTypeInfo,
       withCredentials: true,
     }).then((res) => {
-      if (res.data.message === "没有登录") {
-        localStorage.removeItem("openId");
-        props.history.push("/");
-      } else {
-        setTypeInfo(res.data.data);
-      }
+      // if (res.data.message === "没有登录") {
+      //   localStorage.removeItem("openId");
+      //   props.history.push("/");
+      // } else {
+      //   setTypeInfo(res.data.data);
+      // }
+      setTypeInfo(res.data.data);
     });
   };
 
@@ -128,6 +137,8 @@ function AddArticle(props) {
     dataProps.article_content = articleContent;
     dataProps.intro = introducemd;
     dataProps.addTime = new Date(showDate).getTime() / 1000;
+    dataProps.is_public = yn_public;
+    dataProps.is_top = 0;
     if (articleId === 0) {
       dataProps.view_count = 0;
       axios({
@@ -164,99 +175,114 @@ function AddArticle(props) {
   const selectTypeHandler = (value) => {
     setSelectType(value);
   };
+  // 获取带有格式的当前时间
+  const getNowTime = () => {
+    let now = new Date();
+    setShowDate(`${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`);
+  };
+  // 改变Swith 的状态后的函数 设置是否发布
+  const changeSwithInfo = (checked) => {
+    checked ? (yn_public = 1) : (yn_public = 0);
+  };
 
   return (
     <div>
-      <Row gutter={10}>
-        <Col span={15}>
-          <Input
-            placeholder="博客标题"
-            size="large"
-            value={articleTitle}
-            onChange={(e) => {
-              setArticleTitle(e.target.value);
-            }}
-          />
-        </Col>
-        <Col span={4} push={1}>
-          <Space size={"middle"}>
-            <Select
-              defaultValue={selectedType}
+      <Skeleton active loading={isLoading} title paragraph>
+        <Row gutter={10}>
+          <Col span={15}>
+            <Input
+              placeholder="博客标题"
               size="large"
-              onChange={selectTypeHandler}
-            >
-              {typeInfo.map((item, index) => {
-                return (
-                  <Option key={index} value={item.id}>
-                    {item.typeName}
-                  </Option>
-                );
-              })}
-            </Select>
-            <Button size="large">暂存文章</Button>
-            <Button type="primary" size="large" onClick={saveArticle}>
-              发布文章
-            </Button>
-          </Space>
-        </Col>
-      </Row>
-      <Row gutter={5}>
-        <Col span={18}>
-          <br />
-          <Row gutter={10}>
-            <Col span={12}>
-              <TextArea
-                className="markdown-content"
-                rows={35}
-                value={articleContent}
-                placeholder="文章内容"
-                onChange={changeContent}
+              value={articleTitle}
+              onChange={(e) => {
+                setArticleTitle(e.target.value);
+              }}
+            />
+          </Col>
+          <Col span={4} push={1}>
+            <Space size={"middle"}>
+              <Switch
+                checkedChildren="发"
+                unCheckedChildren="存"
+                defaultChecked
+                onChange={changeSwithInfo}
               />
-            </Col>
-            <Col span={12}>
-              <div
-                className="show-html"
-                dangerouslySetInnerHTML={{ __html: marked(markdownContent) }}
-              ></div>
-            </Col>
-          </Row>
-        </Col>
-        <Col span={6}>
-          <Row>
-            <Col span={24}>
-              <br />
-              <br />
-              <br />
-            </Col>
-            <Col span={24}>
-              <TextArea
-                placeholder="文章简介"
-                onChange={changeIntro}
-                value={introducemd}
-                autoSize={{ minRows: 5 }}
-              />
-              <br />
-              <br />
-              <div
-                className="introduce-html"
-                dangerouslySetInnerHTML={{ __html: introducehtml }}
-              ></div>
-            </Col>
-            <Col span={12}>
-              <div className="date-select">
-                <DatePicker
-                  placeholder="发布日期"
-                  size="large"
-                  value={showDate}
-                  onChange={(date, dateString) => {
-                    setShowDate(dateString);
-                  }}
+              <Select
+                value={selectedType}
+                size="large"
+                onChange={selectTypeHandler}
+              >
+                {typeInfo.map((item, index) => {
+                  return (
+                    <Option key={index} value={item.id}>
+                      {item.typeName}
+                    </Option>
+                  );
+                })}
+              </Select>
+
+              <Button type="primary" size="large" onClick={saveArticle}>
+                发布文章
+              </Button>
+            </Space>
+          </Col>
+        </Row>
+        <Row gutter={5}>
+          <Col span={18}>
+            <br />
+            <Row gutter={10}>
+              <Col span={12}>
+                <TextArea
+                  className="markdown-content"
+                  rows={35}
+                  value={articleContent}
+                  placeholder="文章内容"
+                  onChange={changeContent}
                 />
-              </div>
-            </Col>
-          </Row>
-        </Col>
-      </Row>
+              </Col>
+              <Col span={12}>
+                <div
+                  className="show-html"
+                  dangerouslySetInnerHTML={{ __html: marked(markdownContent) }}
+                ></div>
+              </Col>
+            </Row>
+          </Col>
+          <Col span={6}>
+            <Row>
+              <Col span={24}>
+                <br />
+              </Col>
+              <Col span={24}>
+                <TextArea
+                  placeholder="文章简介"
+                  onChange={changeIntro}
+                  value={introducemd}
+                  autoSize={{ minRows: 5 }}
+                />
+                <br />
+                <br />
+                <div
+                  className="introduce-html"
+                  dangerouslySetInnerHTML={{ __html: introducehtml }}
+                ></div>
+              </Col>
+              <Col span={12}>
+                <div className="date-select">
+                  <DatePicker
+                    placeholder="发布日期"
+                    size="large"
+                    value={moment(showDate, "YYYY-MM-DD")}
+                    onChange={(date, dateString) => {
+                      setShowDate(dateString);
+                    }}
+                  />
+                </div>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      </Skeleton>
     </div>
   );
 }

@@ -8,9 +8,10 @@ const { confirm } = Modal;
 function ArticleList(props) {
   const [list, setList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     getList();
-  }, []);
+  }, [list]);
   const getList = () => {
     axios({
       method: "get",
@@ -39,15 +40,29 @@ function ArticleList(props) {
     });
   };
   const updateArticle = (id) => {
-    props.history.push(`/index/add/${id}`)
-  
+    props.history.push(`/index/add/${id}`);
   };
+  const changePublicState = (aid, yn_id) => {
+    let dataProps = {
+      id:aid,
+      yn_public:yn_id
+    }
+    axios({
+      method: "post",
+      url: `${servicePath.alterPublicState}`,
+      data: dataProps,
+      withCredentials: true,
+    }).then((res) => {
+      console.log(res.data.isOk)
+    });
+  };
+
   return (
     <div>
       <List
         header={
           <Row className="list-div">
-            <Col span={8}>
+            <Col span={6}>
               <b>标题</b>
             </Col>
             <Col span={4}>
@@ -59,7 +74,7 @@ function ArticleList(props) {
             <Col span={4}>
               <b>浏览量</b>
             </Col>
-            <Col span={4}>
+            <Col span={6}>
               <b>操作</b>
             </Col>
           </Row>
@@ -70,7 +85,7 @@ function ArticleList(props) {
           <Skeleton loading={isLoading}>
             <List.Item>
               <Row className="list-div">
-                <Col span={8}>
+                <Col span={6}>
                   <b>{item.title}</b>
                 </Col>
                 <Col span={4}>
@@ -82,7 +97,7 @@ function ArticleList(props) {
                 <Col span={4}>
                   <b>{item.view_count}</b>
                 </Col>
-                <Col span={4}>
+                <Col span={6}>
                   <Space>
                     <Button
                       type="primary"
@@ -101,6 +116,27 @@ function ArticleList(props) {
                     >
                       删除
                     </Button>
+                    {item.is_public ? (
+                      <Button
+                        type="primary" ghost
+                        onClick={() => {
+                          console.log(item);
+                          changePublicState(item.id, 0);
+                        }}
+                      >
+                        暂存
+                      </Button>
+                    ) : (
+                      <Button
+                        type="primary"
+                        onClick={() => {
+                          console.log(item);
+                          changePublicState(item.id, 1);
+                        }}
+                      >
+                        发布
+                      </Button>
+                    )}
                   </Space>
                 </Col>
               </Row>

@@ -7,6 +7,7 @@ import AddArticle from "./AddArticle";
 export default function Main() {
   return (
     <Router>
+
         <Redirect  from="/" to="/login"></Redirect>
         <Route path="/login/"  component={Login}></Route>
         <Route path="/index/"  component={AdminIndex}></Route>
