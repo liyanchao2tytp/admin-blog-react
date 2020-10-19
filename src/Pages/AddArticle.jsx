@@ -36,16 +36,16 @@ function AddArticle(props) {
   const [isLoading, setIsLoading] = useState(true);
 
   let yn_public = 0; // 暂存或者发布文章
+  let id = props.match.params.id;
 
   useEffect(() => {
     getTypeInfo();
-    let id = props.match.params.id;
     console.log(id);
     if (id) {
       setArticleId(id);
-      console.log("进来啦2");
       getArticleById(id);
     } else {
+      getNowTime()
       setIsLoading(false);
     }
   }, []);
