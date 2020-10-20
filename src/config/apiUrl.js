@@ -9,7 +9,9 @@ let servicePath = {
   delArticle: ipUrl + 'admin/delArticle',  // 删除文章
   getArticleById: ipUrl + 'admin/getArticleById',  //根据id获取文章
   alterPublicState: ipUrl + 'admin/alterPubState',    //改变发布状态
-  alterTopState:ipUrl+'admin/alterTopState',    // 是否置顶
+  alterTopState: ipUrl + 'admin/alterTopState',    // 是否置顶
+  getRecycleArticleList: ipUrl + 'admin/getRecycleList',  //获取回收站文章列表
+  delArticleToRecycle:ipUrl+'admin/deleteToRecycle',  //删除文章到回收站
 }
 
 export default servicePath
