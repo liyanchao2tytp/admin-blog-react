@@ -3,6 +3,14 @@ import { List, Row, Col, Modal, message, Button, Space, Skeleton } from "antd";
 import axios from "axios";
 import servicePath from "../config/apiUrl";
 import "../static/css/ArticleList.css";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  EyeOutlined,
+  EyeInvisibleOutlined,
+  LikeOutlined,
+  DislikeOutlined,
+} from "@ant-design/icons";
 const { confirm } = Modal;
 
 function ArticleList(props) {
@@ -16,6 +24,7 @@ function ArticleList(props) {
     axios({
       method: "get",
       url: servicePath.getArticleList,
+      header: { "Access-Control-Allow-Origin": "*" },
       withCredentials: true,
     }).then((res) => {
       setList(res.data.articleList);
@@ -44,16 +53,31 @@ function ArticleList(props) {
   };
   const changePublicState = (aid, yn_id) => {
     let dataProps = {
-      id:aid,
-      yn_public:yn_id
-    }
+      id: aid,
+      yn_public: yn_id,
+    };
     axios({
       method: "post",
       url: `${servicePath.alterPublicState}`,
       data: dataProps,
       withCredentials: true,
     }).then((res) => {
-      console.log(res.data.isOk)
+      console.log(res.data.isOk);
+    });
+  };
+
+  const changeTopState = (tid, yn_id) => {
+    let dataProps = {
+      id: tid,
+      yn_top: yn_id,
+    };
+    axios({
+      method: "post",
+      url: `${servicePath.alterTopState}`,
+      data: dataProps,
+      withCredentials: true,
+    }).then((res) => {
+      console.log(res.data.isOk);
     });
   };
 
@@ -65,14 +89,20 @@ function ArticleList(props) {
             <Col span={6}>
               <b>标题</b>
             </Col>
-            <Col span={4}>
+            <Col span={2}>
               <b>类别</b>
             </Col>
             <Col span={4}>
               <b>发布时间</b>
             </Col>
-            <Col span={4}>
+            <Col span={2}>
               <b>浏览量</b>
+            </Col>
+            <Col span={2}>
+              <b>置顶</b>
+            </Col>
+            <Col span={2}>
+              <b>是否发布</b>
             </Col>
             <Col span={6}>
               <b>操作</b>
@@ -88,55 +118,86 @@ function ArticleList(props) {
                 <Col span={6}>
                   <b>{item.title}</b>
                 </Col>
-                <Col span={4}>
+                <Col span={2}>
                   <b>{item.typeName}</b>
                 </Col>
                 <Col span={4}>
                   <b>{item.addTime}</b>
                 </Col>
-                <Col span={4}>
+                <Col span={2}>
                   <b>{item.view_count}</b>
                 </Col>
-                <Col span={6}>
+                <Col span={2}>
+                  {item.is_top ? (
+                    <Button onClick={() => changeTopState(item.id, 0)}>
+                      <DislikeOutlined
+                        style={{ fontSize: "16px", color: "#008B00" }}
+                      />
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={() => {
+                        changeTopState(item.id, 1);
+                      }}
+                    >
+                      <LikeOutlined
+                        style={{ fontSize: "16px", color: "#FF69B4" }}
+                      />
+                    </Button>
+                  )}
+                </Col>
+
+                <Col span={2}>
+                  {item.is_public ? (
+                    <Button
+                      type="primary"
+                      ghost
+                      shape="round"
+                      onClick={() => {
+                        console.log(item);
+                        changePublicState(item.id, 0);
+                      }}
+                    >
+                      <EyeInvisibleOutlined />
+                      暂存
+                    </Button>
+                  ) : (
+                    <Button
+                      type="primary"
+                      shape="round"
+                      onClick={() => {
+                        console.log(item);
+                        changePublicState(item.id, 1);
+                      }}
+                    >
+                      <EyeOutlined />
+                      发布
+                    </Button>
+                  )}
+                </Col>
+                <Col span={4}>
                   <Space>
                     <Button
                       type="primary"
+                      shape="round"
                       onClick={() => {
                         updateArticle(item.id);
                       }}
                     >
+                      <EditOutlined />
                       修改
                     </Button>
                     <Button
                       type="primary"
                       danger
+                      shape="round"
                       onClick={() => {
                         delArticle(item.id);
                       }}
                     >
+                      <DeleteOutlined />
                       删除
                     </Button>
-                    {item.is_public ? (
-                      <Button
-                        type="primary" ghost
-                        onClick={() => {
-                          console.log(item);
-                          changePublicState(item.id, 0);
-                        }}
-                      >
-                        暂存
-                      </Button>
-                    ) : (
-                      <Button
-                        type="primary"
-                        onClick={() => {
-                          console.log(item);
-                          changePublicState(item.id, 1);
-                        }}
-                      >
-                        发布
-                      </Button>
-                    )}
                   </Space>
                 </Col>
               </Row>

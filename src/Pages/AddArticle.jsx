@@ -36,16 +36,16 @@ function AddArticle(props) {
   const [isLoading, setIsLoading] = useState(true);
 
   let yn_public = 0; // 暂存或者发布文章
+  let id = props.match.params.id;
 
   useEffect(() => {
     getTypeInfo();
-    let id = props.match.params.id;
     console.log(id);
     if (id) {
       setArticleId(id);
-      console.log("进来啦2");
       getArticleById(id);
     } else {
+      getNowTime()
       setIsLoading(false);
     }
   }, []);
@@ -101,13 +101,12 @@ function AddArticle(props) {
       url: servicePath.getTypeInfo,
       withCredentials: true,
     }).then((res) => {
-      // if (res.data.message === "没有登录") {
-      //   localStorage.removeItem("openId");
-      //   props.history.push("/");
-      // } else {
-      //   setTypeInfo(res.data.data);
-      // }
-      setTypeInfo(res.data.data);
+      if (res.data.message === "没有登录") {
+        localStorage.removeItem("openId");
+        props.history.push("/");
+      } else {
+        setTypeInfo(res.data.data);
+      }
     });
   };
 
