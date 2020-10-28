@@ -1,4 +1,3 @@
-
 .logo {
   height: 32px;
   background: rgba(255, 255, 255, 0.2);
@@ -8,6 +7,11 @@
 .site-layout .site-layout-background {
   background: #fff;
 }
-  [data-theme="dark"] .site-layout .site-layout-background {
-    background: #141414;
-  }
+[data-theme="dark"] .site-layout .site-layout-background {
+  background: #141414;
+}
+
+.ant-breadcrumb {
+  height: 1rem;
+  vertical-align: middle;
+}
