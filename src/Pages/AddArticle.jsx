@@ -101,12 +101,14 @@ function AddArticle(props) {
       url: servicePath.getTypeInfo,
       withCredentials: true,
     }).then((res) => {
-      if (res.data.message === "没有登录") {
-        localStorage.removeItem("openId");
-        props.history.push("/");
-      } else {
-        setTypeInfo(res.data.data);
-      }
+      // if (res.data.message === "没有登录") {
+      //   localStorage.removeItem("openId");
+      //   props.history.push("/");
+      // } else {
+      //   setTypeInfo(res.data.data);
+      // }
+      setTypeInfo(res.data.data);
+
     });
   };
 

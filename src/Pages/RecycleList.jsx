@@ -13,10 +13,10 @@ const { confirm } = Modal;
 function RecycleList(props) {
   const [list, setList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-
+  const [refresh,setRe] = useState(0)
   useEffect(() => {
     getList();
-  }, [list]);
+  }, [refresh]);
   const getList = () => {
     axios({
       method: "get",
@@ -46,7 +46,7 @@ function RecycleList(props) {
     });
   };
   const updateArticle = (id) => {
-    props.history.push(`/index/add/${id}`);
+    props.history.push(`/home/add/${id}`);
   };
 
 
@@ -61,7 +61,7 @@ function RecycleList(props) {
       data: dataProps,
       withCredentials: true,
     }).then((res) => {
-      console.log(res.data.isOk);
+      refresh?setRe(0):setRe(1)
     });
   };
 

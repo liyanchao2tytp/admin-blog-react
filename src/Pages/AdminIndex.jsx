@@ -25,13 +25,13 @@ function AdminIndex(props) {
   const handleArticleMenu = (e) => {
     switch (e.key) {
       case "addArticle":
-        props.history.push("/index/add");
+        props.history.push("/home/add");
         break;
       case "articleList":
-        props.history.push("/index/list");
+        props.history.push("/home/list");
         break;
       case "recycleList":
-        props.history.push("/index/recycle");
+        props.history.push("/home/recycle");
         break;
     }
   };
@@ -74,16 +74,15 @@ function AdminIndex(props) {
             className="site-layout-background"
             style={{ padding: 24, minHeight: 360 }}
           >
-            <Route path="/index" exact component={AddArticle}></Route>
+            <Route path="/home" exact component={AddArticle}></Route>
             <Route
-              path="/index/add"
-              strict
+              path="/home/add"
               exact
               component={AddArticle}
             ></Route>
-            <Route path="/index/list/" component={ArticleList}></Route>
-            <Route path="/index/add/:id" exact component={AddArticle}></Route>
-            <Route path="/index/recycle" exact component={RecycleList}></Route>
+            <Route path="/home/list/" component={ArticleList}></Route>
+            <Route path="/home/add/:id" exact component={AddArticle}></Route>
+            <Route path="/home/recycle" exact component={RecycleList}></Route>
           </div>
         </Content>
         <Footer style={{ textAlign: "center" }}>Ant Design + React</Footer>

@@ -40,7 +40,7 @@ export default function Login(props) {
       setIsLoading(false);
       if (res.data.message === "登陆成功") {
         localStorage.setItem("openId", res.data.openId);
-        props.history.push("/index");
+        props.history.push("/home");
       } else {
         console.log(res.data.message);
         message.error("用户名密码错误");
@@ -107,11 +107,11 @@ export default function Login(props) {
       </div>
       <div className="login-div">
         <Spin tip="Loading..." spinning={isLoading} style={{backgroundColor:"rgb(255,255,255,0.3)"}}>
-          <div style={{}}>
+          <div>
           <Card
             title="Login Blog System"
             bordered={true}
-            style={{ width: 400,backgroundColor:"rgb(255,255,255,0.2)",}}
+            style={{ width: 400,backgroundColor:"rgb(255,255,255,0.3)"}}
           >
             <Input
               id="userName"

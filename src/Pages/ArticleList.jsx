@@ -16,10 +16,10 @@ const { confirm } = Modal;
 function ArticleList(props) {
   const [list, setList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-
+  const [refresh,setRe] = useState(0)
   useEffect(() => {
     getList();
-  }, [list]);
+  }, [refresh]);
   const getList = () => {
     axios({
       method: "get",
@@ -27,6 +27,7 @@ function ArticleList(props) {
       header: { "Access-Control-Allow-Origin": "*" },
       withCredentials: true,
     }).then((res) => {
+      let newList = res.data.articleList
       setList(res.data.articleList);
       setIsLoading(false);
     });
@@ -57,7 +58,7 @@ function ArticleList(props) {
     });
   };
   const updateArticle = (id) => {
-    props.history.push(`/index/add/${id}`);
+    props.history.push(`/home/add/${id}`);
   };
   const changePublicState = (aid, yn_id) => {
     let dataProps = {
@@ -70,7 +71,8 @@ function ArticleList(props) {
       data: dataProps,
       withCredentials: true,
     }).then((res) => {
-      console.log(res.data.isOk);
+
+      refresh?setRe(0):setRe(1)
     });
   };
 
@@ -86,6 +88,7 @@ function ArticleList(props) {
       withCredentials: true,
     }).then((res) => {
       console.log(res.data.isOk);
+      refresh?setRe(0):setRe(1)
     });
   };
 
