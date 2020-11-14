@@ -1,3 +1,10 @@
+/*
+ * @Author: lyc
+ * @Date: 2020-10-28 21:33:58
+ * @LastEditors: lyc
+ * @LastEditTime: 2020-11-14 21:28:57
+ * @Description: 文章列表
+ */
 import React, { useState, useEffect } from "react";
 import { List, Row, Col, Modal, message, Button, Space, Skeleton } from "antd";
 import axios from "axios";
@@ -11,40 +18,51 @@ import {
   LikeOutlined,
   DislikeOutlined,
 } from "@ant-design/icons";
+import { Pagination } from "antd";
 const { confirm } = Modal;
 
 function ArticleList(props) {
   const [list, setList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [refresh,setRe] = useState(0)
+  const [refresh, setRe] = useState(0);
+  const [num,setNum] = useState(0)
+
   useEffect(() => {
     getList();
   }, [refresh]);
+
+  /**
+   * @description: 获取所有文章列表
+   */
   const getList = () => {
     axios({
       method: "get",
-      url: servicePath.getArticleList,
+      url: `${servicePath.getArticleList}/1/10`,
       header: { "Access-Control-Allow-Origin": "*" },
       withCredentials: true,
     }).then((res) => {
-      let newList = res.data.articleList
-      setList(res.data.articleList);
+      setList(res.data.data.article);
+      setNum(res.data.data.num[0].total)
       setIsLoading(false);
     });
   };
-  const delArticle = (id,deid=1) => {
+  /**
+   * @description: 修改文章的is_recycle字段
+   * @param {id}  文章id
+   * @param {deid}  1代表在回收站  0代表在文章列表
+   */
+  const delArticle = (id, deid = 1) => {
     confirm({
       title: "确定要删除这篇博客文章吗？",
       content: "删除后，你的博客文章将在首页不再显示",
       onOk() {
-        
         axios({
-          method:'post',
-          url:`${servicePath.delArticleToRecycle}`,
-          data:{
+          method: "post",
+          url: `${servicePath.delArticleToRecycle}`,
+          data: {
             id,
-            yn_goto_recycle:deid,
-            time:(new Date().getTime() / 1000)
+            yn_goto_recycle: deid,
+            time: new Date().getTime() / 1000,
           },
           withCredentials: true,
         }).then((res) => {
@@ -71,11 +89,15 @@ function ArticleList(props) {
       data: dataProps,
       withCredentials: true,
     }).then((res) => {
-
-      refresh?setRe(0):setRe(1)
+      refresh ? setRe(0) : setRe(1);
     });
   };
-
+  /**
+   * @description: 改变文章是否置顶
+   * @param {tid} 文章的id号，对应数据库中文章的主键id
+   * @param {yn_id} 是否置顶，0代表不置顶，1代表置顶
+   * @return {*}
+   */
   const changeTopState = (tid, yn_id) => {
     let dataProps = {
       id: tid,
@@ -87,11 +109,26 @@ function ArticleList(props) {
       data: dataProps,
       withCredentials: true,
     }).then((res) => {
-      console.log(res.data.isOk);
-      refresh?setRe(0):setRe(1)
+      refresh ? setRe(0) : setRe(1);
     });
   };
 
+  /**
+   * @description: 分页 页面改变时调用的函数
+   * @param {page} 改变后的页码
+   * @param {pageSize} 每页的条数
+   * @return {*}
+   */  
+  const gotoPage = (page,pageSize)=>{
+    axios({
+      method: "get",
+      url: `${servicePath.getArticleList}/${page}/${pageSize}`,
+      header: { "Access-Control-Allow-Origin": "*" },
+      withCredentials: true,
+    }).then((res) => {
+      setList(res.data.data.article);
+    });
+  }
   return (
     <div>
       <List
@@ -215,6 +252,15 @@ function ArticleList(props) {
             </List.Item>
           </Skeleton>
         )}
+      />
+      <Pagination
+        total={num}
+        hideOnSinglePage={true}
+        showSizeChanger
+        showQuickJumper
+        showTotal={(total) => `共 ${total} 条`}
+        onChange={(page,pageSize)=>gotoPage(page,pageSize)}
+        style={{"textAlign": "center","paddingTop":"20px"}}
       />
     </div>
   );

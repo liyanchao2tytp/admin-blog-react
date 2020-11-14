@@ -6,8 +6,8 @@ import AdminIndex from "./AdminIndex";
 export default function Main() {
   return (
     <Router>
-        <Redirect  from="/" to="/login"></Redirect>
-        <Route path="/login/"  component={Login}></Route>
+        {/* <Redirect exact from="/" to="/login"></Redirect> */}
+        <Route path="/login/" component={Login}></Route>
         <Route path="/home/"  component={AdminIndex}></Route>
     </Router>
   );
