@@ -2,7 +2,7 @@
  * @Author: lyc
  * @Date: 2020-10-28 21:33:58
  * @LastEditors: lyc
- * @LastEditTime: 2020-11-16 09:11:28
+ * @LastEditTime: 2020-11-16 15:03:50
  * @Description: file content
  */
 import React, { useEffect, useState } from "react";
@@ -45,7 +45,8 @@ function AddArticle(props) {
 
   const [isLoading, setIsLoading] = useState(true);
 
-  var yn_public = 1; // 暂存或者发布文章 0是暂存  1是发布
+  const [yn_public,setYnPublic] =useState(1); // 暂存或者发布文章 0 是暂存  1 是发布
+  var yn_top = 0;   // 是否置顶文章  0 不置顶   1 置顶
   var id = props.match.params.id;   //获取文章id，如果有就是修改，没有就是插入
   /**
    * @description: 根据id是否存在来判断是插入还是更新 
@@ -89,6 +90,9 @@ function AddArticle(props) {
       header: { "Access-Control-Allow-Origin": "*" },
       withCredentials: true,
     }).then((res) => {
+      yn_top = res.data.data[0].is_top;
+      setYnPublic(res.data.data[0].is_public);
+      console.log('axios:'+res.data.data[0].is_public)
       setArticleTitle(res.data.data[0].title);
       setArticleContent(res.data.data[0].content);
       let html = marked(res.data.data[0].content);
@@ -102,6 +106,7 @@ function AddArticle(props) {
       setIsLoading(false);
     });
   };
+
   const changeContent = (e) => {
     setArticleContent(e.target.value);
     let html = marked(e.target.value);
@@ -168,9 +173,10 @@ function AddArticle(props) {
     dataProps.article_content = articleContent;
     dataProps.intro = introducemd;
     dataProps.addTime = new Date(showDate).getTime() / 1000;
-    console.log(yn_public);
     dataProps.is_public = yn_public;
-    dataProps.is_top = 0;
+    console.log(yn_public);
+    console.log('is_pub'+dataProps.is_public);
+    // dataProps.is_top = 0;
     // 如果为0，则说明是新增的文章
     if (articleId === 0) {
       dataProps.view_count = 0;
@@ -206,7 +212,6 @@ function AddArticle(props) {
   };
 
   const selectTypeHandler = (value,option) => {
-    console.log(option);
     setSelectType(option.children);
   };
   // 获取带有格式的当前时间
@@ -216,8 +221,8 @@ function AddArticle(props) {
   };
   // 改变Swith 的状态后的函数 设置是否发布
   const changeSwithInfo = (checked) => {
-    checked ? (yn_public = 1) : (yn_public = 0);
-    console.log(yn_public);
+    checked ? setYnPublic(1) : setYnPublic(0);
+    console.log('状态改变后----'+yn_public);
   };
 
   return (
@@ -239,7 +244,7 @@ function AddArticle(props) {
               <Switch
                 checkedChildren="发"
                 unCheckedChildren="存"
-                defaultChecked
+                defaultChecked = { yn_public?true:false }           
                 onChange={changeSwithInfo}
               />
               <Select
