@@ -1,3 +1,10 @@
+/*
+ * @Author: lyc
+ * @Date: 2020-10-28 21:33:58
+ * @LastEditors: lyc
+ * @LastEditTime: 2020-11-16 09:11:28
+ * @Description: file content
+ */
 import React, { useEffect, useState } from "react";
 import "../static/css/AddArticle.css";
 import marked from "marked";
@@ -14,9 +21,12 @@ import {
   message,
   Skeleton,
   Switch,
+  ConfigProvider
 } from "antd";
+import zhCN from 'antd/lib/locale/zh_CN';
 import axios from "axios";
 import servicePath from "../config/apiUrl.js";
+import {Type} from '../config/type.js'
 import moment from "moment";
 import "moment/locale/zh-cn";
 const { Option } = Select;
@@ -35,12 +45,15 @@ function AddArticle(props) {
 
   const [isLoading, setIsLoading] = useState(true);
 
-  let yn_public = 0; // 暂存或者发布文章
-  let id = props.match.params.id;
-
+  var yn_public = 1; // 暂存或者发布文章 0是暂存  1是发布
+  var id = props.match.params.id;   //获取文章id，如果有就是修改，没有就是插入
+  /**
+   * @description: 根据id是否存在来判断是插入还是更新 
+   * @param {*}
+   * @return {*}
+   */
   useEffect(() => {
     getTypeInfo();
-    console.log(id);
     if (id) {
       setArticleId(id);
       getArticleById(id);
@@ -50,6 +63,11 @@ function AddArticle(props) {
     }
   }, []);
 
+  /**
+   * @description: 配置 marked 插件
+   * @param {*}
+   * @return {*}
+   */  
   const renderer = new marked.Renderer();
   marked.setOptions({
     renderer: renderer,
@@ -133,13 +151,27 @@ function AddArticle(props) {
     // let dateText = showDate.replace(/-/g, "/");
 
     let dataProps = {};
-    dataProps.type_id = selectedType;
+    // 根据selectedType的类型确定 type_id的值
+    switch (selectedType) {
+      case Type.TYPE_ONE:
+        dataProps.type_id = 1;
+        break;
+      case Type.TYPE_TWO:
+        dataProps.type_id = 2;
+        break;
+      case Type.TYPE_THREE:
+        dataProps.type_id = 3;
+        break;
+    }
+
     dataProps.title = articleTitle;
     dataProps.article_content = articleContent;
     dataProps.intro = introducemd;
     dataProps.addTime = new Date(showDate).getTime() / 1000;
+    console.log(yn_public);
     dataProps.is_public = yn_public;
     dataProps.is_top = 0;
+    // 如果为0，则说明是新增的文章
     if (articleId === 0) {
       dataProps.view_count = 0;
       axios({
@@ -173,8 +205,9 @@ function AddArticle(props) {
     }
   };
 
-  const selectTypeHandler = (value) => {
-    setSelectType(value);
+  const selectTypeHandler = (value,option) => {
+    console.log(option);
+    setSelectType(option.children);
   };
   // 获取带有格式的当前时间
   const getNowTime = () => {
@@ -184,6 +217,7 @@ function AddArticle(props) {
   // 改变Swith 的状态后的函数 设置是否发布
   const changeSwithInfo = (checked) => {
     checked ? (yn_public = 1) : (yn_public = 0);
+    console.log(yn_public);
   };
 
   return (
@@ -270,14 +304,16 @@ function AddArticle(props) {
               </Col>
               <Col span={12}>
                 <div className="date-select">
-                  <DatePicker
-                    placeholder="发布日期"
-                    size="large"
-                    value={moment(showDate, "YYYY-MM-DD")}
-                    onChange={(date, dateString) => {
-                      setShowDate(dateString);
-                    }}
-                  />
+                  <ConfigProvider locale={zhCN}>
+                    <DatePicker
+                      placeholder="发布日期"
+                      size="large"
+                      value={moment(showDate, "YYYY-MM-DD")}
+                      onChange={(date, dateString) => {
+                        setShowDate(dateString);
+                      }}
+                    />
+                  </ConfigProvider>
                 </div>
               </Col>
             </Row>

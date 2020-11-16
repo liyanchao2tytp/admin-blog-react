@@ -2,11 +2,23 @@
  * @Author: lyc
  * @Date: 2020-10-28 21:33:58
  * @LastEditors: lyc
- * @LastEditTime: 2020-11-14 21:28:57
+ * @LastEditTime: 2020-11-15 21:34:55
  * @Description: 文章列表
  */
 import React, { useState, useEffect } from "react";
-import { List, Row, Col, Modal, message, Button, Space, Skeleton } from "antd";
+import {
+  List,
+  Row,
+  Col,
+  Modal,
+  message,
+  Button,
+  Space,
+  Skeleton,
+  ConfigProvider,
+} from "antd";
+import zhCN from 'antd/lib/locale/zh_CN';
+
 import axios from "axios";
 import servicePath from "../config/apiUrl";
 import "../static/css/ArticleList.css";
@@ -25,7 +37,7 @@ function ArticleList(props) {
   const [list, setList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [refresh, setRe] = useState(0);
-  const [num,setNum] = useState(0)
+  const [num, setNum] = useState(0);
 
   useEffect(() => {
     getList();
@@ -42,7 +54,7 @@ function ArticleList(props) {
       withCredentials: true,
     }).then((res) => {
       setList(res.data.data.article);
-      setNum(res.data.data.num[0].total)
+      setNum(res.data.data.num[0].total);
       setIsLoading(false);
     });
   };
@@ -78,6 +90,7 @@ function ArticleList(props) {
   const updateArticle = (id) => {
     props.history.push(`/home/add/${id}`);
   };
+  
   const changePublicState = (aid, yn_id) => {
     let dataProps = {
       id: aid,
@@ -118,8 +131,8 @@ function ArticleList(props) {
    * @param {page} 改变后的页码
    * @param {pageSize} 每页的条数
    * @return {*}
-   */  
-  const gotoPage = (page,pageSize)=>{
+   */
+  const gotoPage = (page, pageSize) => {
     axios({
       method: "get",
       url: `${servicePath.getArticleList}/${page}/${pageSize}`,
@@ -128,7 +141,7 @@ function ArticleList(props) {
     }).then((res) => {
       setList(res.data.data.article);
     });
-  }
+  };
   return (
     <div>
       <List
@@ -253,15 +266,17 @@ function ArticleList(props) {
           </Skeleton>
         )}
       />
-      <Pagination
-        total={num}
-        hideOnSinglePage={true}
-        showSizeChanger
-        showQuickJumper
-        showTotal={(total) => `共 ${total} 条`}
-        onChange={(page,pageSize)=>gotoPage(page,pageSize)}
-        style={{"textAlign": "center","paddingTop":"20px"}}
-      />
+      <ConfigProvider locale = {zhCN}>
+        <Pagination
+          total={num}
+          hideOnSinglePage={true}
+          showSizeChanger
+          showQuickJumper
+          showTotal={(total) => `共 ${total} 条`}
+          onChange={(page, pageSize) => gotoPage(page, pageSize)}
+          style={{ textAlign: "center", paddingTop: "20px" }}
+        />
+      </ConfigProvider>
     </div>
   );
 }

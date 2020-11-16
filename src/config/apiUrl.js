@@ -1,3 +1,10 @@
+/*
+ * @Author: lyc
+ * @Date: 2020-10-28 21:33:58
+ * @LastEditors: lyc
+ * @LastEditTime: 2020-11-15 20:46:10
+ * @Description: file content
+ */
 let ipUrl = 'http://127.0.0.1:7001/'
 
 let servicePath = {
