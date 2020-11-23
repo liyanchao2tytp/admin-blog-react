@@ -4,13 +4,11 @@ import {
   DesktopOutlined,
   PieChartOutlined,
   FileOutlined,
-  TeamOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import "../static/css/AdminIndex.css";
 import AddArticle from "./AddArticle";
 import { Route } from "react-router-dom";
-import { OmitProps } from "antd/lib/transfer/ListBody";
 import ArticleList from "./ArticleList";
 import RecycleList from "./RecycleList";
 const { Content, Footer, Sider } = Layout;
@@ -75,11 +73,7 @@ function AdminIndex(props) {
             style={{ padding: 24, minHeight: 360 }}
           >
             <Route path="/home" exact component={AddArticle}></Route>
-            <Route
-              path="/home/add"
-              exact
-              component={AddArticle}
-            ></Route>
+            <Route path="/home/add" exact component={AddArticle}></Route>
             <Route path="/home/list/" component={ArticleList}></Route>
             <Route path="/home/add/:id" exact component={AddArticle}></Route>
             <Route path="/home/recycle" exact component={RecycleList}></Route>

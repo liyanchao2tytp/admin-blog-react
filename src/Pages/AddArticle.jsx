@@ -2,7 +2,7 @@
  * @Author: lyc
  * @Date: 2020-10-28 21:33:58
  * @LastEditors: lyc
- * @LastEditTime: 2020-11-16 15:03:50
+ * @LastEditTime: 2020-11-21 12:42:52
  * @Description: file content
  */
 import React, { useEffect, useState } from "react";
@@ -21,12 +21,12 @@ import {
   message,
   Skeleton,
   Switch,
-  ConfigProvider
+  ConfigProvider,
 } from "antd";
-import zhCN from 'antd/lib/locale/zh_CN';
+import zhCN from "antd/lib/locale/zh_CN";
 import axios from "axios";
 import servicePath from "../config/apiUrl.js";
-import {Type} from '../config/type.js'
+import { Type } from "../config/type.js";
 import moment from "moment";
 import "moment/locale/zh-cn";
 const { Option } = Select;
@@ -45,11 +45,11 @@ function AddArticle(props) {
 
   const [isLoading, setIsLoading] = useState(true);
 
-  const [yn_public,setYnPublic] =useState(1); // 暂存或者发布文章 0 是暂存  1 是发布
-  var yn_top = 0;   // 是否置顶文章  0 不置顶   1 置顶
-  var id = props.match.params.id;   //获取文章id，如果有就是修改，没有就是插入
+  const [yn_public, setYnPublic] = useState(1); // 暂存或者发布文章 0 是暂存  1 是发布
+  var yn_top = 0; // 是否置顶文章  0 不置顶   1 置顶
+  var id = props.match.params.id; //获取文章id，如果有就是修改，没有就是插入
   /**
-   * @description: 根据id是否存在来判断是插入还是更新 
+   * @description: 根据id是否存在来判断是插入还是更新
    * @param {*}
    * @return {*}
    */
@@ -59,7 +59,7 @@ function AddArticle(props) {
       setArticleId(id);
       getArticleById(id);
     } else {
-      getNowTime()
+      getNowTime();
       setIsLoading(false);
     }
   }, []);
@@ -68,7 +68,7 @@ function AddArticle(props) {
    * @description: 配置 marked 插件
    * @param {*}
    * @return {*}
-   */  
+   */
   const renderer = new marked.Renderer();
   marked.setOptions({
     renderer: renderer,
@@ -92,7 +92,7 @@ function AddArticle(props) {
     }).then((res) => {
       yn_top = res.data.data[0].is_top;
       setYnPublic(res.data.data[0].is_public);
-      console.log('axios:'+res.data.data[0].is_public)
+      console.log("axios:" + res.data.data[0].is_public);
       setArticleTitle(res.data.data[0].title);
       setArticleContent(res.data.data[0].content);
       let html = marked(res.data.data[0].content);
@@ -131,7 +131,6 @@ function AddArticle(props) {
       //   setTypeInfo(res.data.data);
       // }
       setTypeInfo(res.data.data);
-
     });
   };
 
@@ -175,7 +174,7 @@ function AddArticle(props) {
     dataProps.addTime = new Date(showDate).getTime() / 1000;
     dataProps.is_public = yn_public;
     console.log(yn_public);
-    console.log('is_pub'+dataProps.is_public);
+    console.log("is_pub" + dataProps.is_public);
     // dataProps.is_top = 0;
     // 如果为0，则说明是新增的文章
     if (articleId === 0) {
@@ -211,7 +210,7 @@ function AddArticle(props) {
     }
   };
 
-  const selectTypeHandler = (value,option) => {
+  const selectTypeHandler = (value, option) => {
     setSelectType(option.children);
   };
   // 获取带有格式的当前时间
@@ -222,7 +221,7 @@ function AddArticle(props) {
   // 改变Swith 的状态后的函数 设置是否发布
   const changeSwithInfo = (checked) => {
     checked ? setYnPublic(1) : setYnPublic(0);
-    console.log('状态改变后----'+yn_public);
+    console.log("状态改变后----" + yn_public);
   };
 
   return (
@@ -244,7 +243,7 @@ function AddArticle(props) {
               <Switch
                 checkedChildren="发"
                 unCheckedChildren="存"
-                defaultChecked = { yn_public?true:false }           
+                defaultChecked={yn_public ? true : false}
                 onChange={changeSwithInfo}
               />
               <Select
