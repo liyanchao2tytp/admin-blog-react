@@ -38,8 +38,9 @@ export default function Login(props) {
       withCredentials: true,
     }).then((res) => {
       setIsLoading(false);
-      if (res.data.message === "登陆成功") {
-        localStorage.setItem("openId", res.data.openId);
+      if (res.data.message === "success") {
+        localStorage.setItem("token", res.data.token);
+
         props.history.push("/home");
       } else {
         console.log(res.data.message);

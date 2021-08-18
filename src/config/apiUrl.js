@@ -1,17 +1,26 @@
-let ipUrl = 'http://127.0.0.1:7001/'
+/*
+*@Author:lyc
+*@Date:2020-10-2821:33:58
+ * @LastEditors: lyc
+ * @LastEditTime: 2021-08-18 21:12:14
+*@Description:filecontent
+*/
 
-let servicePath = {
-  checkLogin: ipUrl + 'admin/login',    // 检查用户名和密码 登录页面
-  getTypeInfo: ipUrl + 'admin/getTypeInfo', //获取文章类型
-  addArticle: ipUrl + 'admin/addArticle',  //添加文章
-  updateArticle: ipUrl + 'admin/updateArticle',//更新文章 
-  getArticleList: ipUrl + 'admin/getArticleList',//获取文章列表
-  delArticle: ipUrl + 'admin/delArticle',  // 删除文章
-  getArticleById: ipUrl + 'admin/getArticleById',  //根据id获取文章
-  alterPublicState: ipUrl + 'admin/alterPubState',    //改变发布状态
-  alterTopState: ipUrl + 'admin/alterTopState',    // 是否置顶
-  getRecycleArticleList: ipUrl + 'admin/getRecycleList',  //获取回收站文章列表
-  delArticleToRecycle:ipUrl+'admin/deleteToRecycle',  //删除文章到回收站
+
+const servicePath = {
+checkLogin:'admin/login',//检查用户名和密码登录页面
+Logout:"admin/logout",//登出
+getTypeInfo:'admin/getTypeInfo',//获取文章类型
+addArticle:'admin/addArticle',//添加文章
+addArticleType:'admin/addArticleType',//添加文章类型
+updateArticle:'admin/updateArticle',//更新文章
+getArticleList:'admin/getArticleList',//获取文章列表
+delArticle:'admin/delArticle',//删除文章
+getArticleById:'admin/getArticleById',//根据id获取文章
+alterPublicState:'admin/alterPubState',//改变发布状态
+alterTopState:'admin/alterTopState',//是否置顶
+getRecycleArticleList:'admin/getRecycleList',//获取回收站文章列表
+delArticleToRecycle:'admin/deleteToRecycle',//删除文章到回收站
 }
 
-export default servicePath
+export default servicePath;

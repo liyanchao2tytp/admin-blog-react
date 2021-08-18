@@ -2,12 +2,24 @@
  * @Author: lyc
  * @Date: 2020-10-28 21:33:58
  * @LastEditors: lyc
- * @LastEditTime: 2020-11-14 21:28:57
+ * @LastEditTime: 2021-08-18 21:15:40
  * @Description: 文章列表
  */
 import React, { useState, useEffect } from "react";
-import { List, Row, Col, Modal, message, Button, Space, Skeleton } from "antd";
-import axios from "axios";
+import {
+  List,
+  Row,
+  Col,
+  Modal,
+  message,
+  Button,
+  Space,
+  Skeleton,
+  ConfigProvider,
+} from "antd";
+import zhCN from 'antd/lib/locale/zh_CN';
+
+
 import servicePath from "../config/apiUrl";
 import "../static/css/ArticleList.css";
 import {
@@ -19,13 +31,14 @@ import {
   DislikeOutlined,
 } from "@ant-design/icons";
 import { Pagination } from "antd";
+import $http from "../axios/$http";
 const { confirm } = Modal;
 
 function ArticleList(props) {
   const [list, setList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [refresh, setRe] = useState(0);
-  const [num,setNum] = useState(0)
+  const [num, setNum] = useState(0);
 
   useEffect(() => {
     getList();
@@ -35,14 +48,14 @@ function ArticleList(props) {
    * @description: 获取所有文章列表
    */
   const getList = () => {
-    axios({
+    $http({
       method: "get",
       url: `${servicePath.getArticleList}/1/10`,
       header: { "Access-Control-Allow-Origin": "*" },
       withCredentials: true,
     }).then((res) => {
       setList(res.data.data.article);
-      setNum(res.data.data.num[0].total)
+      setNum(res.data.data.num[0].total);
       setIsLoading(false);
     });
   };
@@ -56,7 +69,7 @@ function ArticleList(props) {
       title: "确定要删除这篇博客文章吗？",
       content: "删除后，你的博客文章将在首页不再显示",
       onOk() {
-        axios({
+        $http({
           method: "post",
           url: `${servicePath.delArticleToRecycle}`,
           data: {
@@ -78,12 +91,13 @@ function ArticleList(props) {
   const updateArticle = (id) => {
     props.history.push(`/home/add/${id}`);
   };
+  
   const changePublicState = (aid, yn_id) => {
     let dataProps = {
       id: aid,
       yn_public: yn_id,
     };
-    axios({
+    $http({
       method: "post",
       url: `${servicePath.alterPublicState}`,
       data: dataProps,
@@ -103,7 +117,7 @@ function ArticleList(props) {
       id: tid,
       yn_top: yn_id,
     };
-    axios({
+    $http({
       method: "post",
       url: `${servicePath.alterTopState}`,
       data: dataProps,
@@ -118,9 +132,9 @@ function ArticleList(props) {
    * @param {page} 改变后的页码
    * @param {pageSize} 每页的条数
    * @return {*}
-   */  
-  const gotoPage = (page,pageSize)=>{
-    axios({
+   */
+  const gotoPage = (page, pageSize) => {
+    $http({
       method: "get",
       url: `${servicePath.getArticleList}/${page}/${pageSize}`,
       header: { "Access-Control-Allow-Origin": "*" },
@@ -128,7 +142,7 @@ function ArticleList(props) {
     }).then((res) => {
       setList(res.data.data.article);
     });
-  }
+  };
   return (
     <div>
       <List
@@ -253,15 +267,17 @@ function ArticleList(props) {
           </Skeleton>
         )}
       />
-      <Pagination
-        total={num}
-        hideOnSinglePage={true}
-        showSizeChanger
-        showQuickJumper
-        showTotal={(total) => `共 ${total} 条`}
-        onChange={(page,pageSize)=>gotoPage(page,pageSize)}
-        style={{"textAlign": "center","paddingTop":"20px"}}
-      />
+      <ConfigProvider locale = {zhCN}>
+        <Pagination
+          total={num}
+          hideOnSinglePage={true}
+          showSizeChanger
+          showQuickJumper
+          showTotal={(total) => `共 ${total} 条`}
+          onChange={(page, pageSize) => gotoPage(page, pageSize)}
+          style={{ textAlign: "center", paddingTop: "20px" }}
+        />
+      </ConfigProvider>
     </div>
   );
 }

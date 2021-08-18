@@ -1,3 +1,10 @@
+/*
+ * @Author: lyc
+ * @Date: 2020-10-28 21:33:58
+ * @LastEditors: lyc
+ * @LastEditTime: 2021-08-18 21:17:26
+ * @Description: file content
+ */
 import React, { useEffect, useState } from "react";
 import "../static/css/AddArticle.css";
 import marked from "marked";
@@ -14,11 +21,14 @@ import {
   message,
   Skeleton,
   Switch,
+  ConfigProvider,
 } from "antd";
-import axios from "axios";
+import zhCN from "antd/lib/locale/zh_CN";
 import servicePath from "../config/apiUrl.js";
+import { Type } from "../config/type.js";
 import moment from "moment";
 import "moment/locale/zh-cn";
+import $http from "../axios/$http";
 const { Option } = Select;
 const { TextArea } = Input;
 
@@ -35,21 +45,31 @@ function AddArticle(props) {
 
   const [isLoading, setIsLoading] = useState(true);
 
-  let yn_public = 0; // 暂存或者发布文章
-  let id = props.match.params.id;
-
+  const [yn_public, setYnPublic] = useState(1); // 暂存或者发布文章 0 是暂存  1 是发布
+  let yn_top = 0; // 是否置顶文章  0 不置顶   1 置顶
+  let id = props.match.params.id; //获取文章id，如果有就是修改，没有就是插入
+  /**
+   * @description: 根据id是否存在来判断是插入还是更新
+   * @param {*}
+   * @return {*}
+   */
   useEffect(() => {
     getTypeInfo();
-    console.log(id);
     if (id) {
       setArticleId(id);
       getArticleById(id);
     } else {
-      getNowTime()
+      getNowTime();
       setIsLoading(false);
     }
+    // eslint-disable-next-line
   }, []);
 
+  /**
+   * @description: 配置 marked 插件
+   * @param {*}
+   * @return {*}
+   */
   const renderer = new marked.Renderer();
   marked.setOptions({
     renderer: renderer,
@@ -64,13 +84,17 @@ function AddArticle(props) {
       return hljs.highlightAuto(code).value;
     },
   });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const getArticleById = (id) => {
-    axios({
+    $http({
       method: "get",
       url: `${servicePath.getArticleById}/${id}`,
       header: { "Access-Control-Allow-Origin": "*" },
       withCredentials: true,
     }).then((res) => {
+      yn_top = res.data.data[0].is_top;
+      setYnPublic(res.data.data[0].is_public);
+      console.log("axios:" + res.data.data[0].is_public);
       setArticleTitle(res.data.data[0].title);
       setArticleContent(res.data.data[0].content);
       let html = marked(res.data.data[0].content);
@@ -84,6 +108,7 @@ function AddArticle(props) {
       setIsLoading(false);
     });
   };
+
   const changeContent = (e) => {
     setArticleContent(e.target.value);
     let html = marked(e.target.value);
@@ -96,7 +121,8 @@ function AddArticle(props) {
   };
 
   const getTypeInfo = () => {
-    axios({
+
+    $http({
       method: "get",
       url: servicePath.getTypeInfo,
       withCredentials: true,
@@ -107,8 +133,12 @@ function AddArticle(props) {
       // } else {
       //   setTypeInfo(res.data.data);
       // }
-      setTypeInfo(res.data.data);
+      
+      console.log("--------------",typeInfo);
+      console.log(res);
 
+      setTypeInfo(res.data.data);
+   
     });
   };
 
@@ -133,16 +163,32 @@ function AddArticle(props) {
     // let dateText = showDate.replace(/-/g, "/");
 
     let dataProps = {};
-    dataProps.type_id = selectedType;
+    // 根据selectedType的类型确定 type_id的值
+    // eslint-disable-next-line default-case
+    switch (selectedType) {
+      case Type.TYPE_ONE:
+        dataProps.type_id = 1;
+        break;
+      case Type.TYPE_TWO:
+        dataProps.type_id = 2;
+        break;
+      case Type.TYPE_THREE:
+        dataProps.type_id = 3;
+        break;
+    }
+
     dataProps.title = articleTitle;
     dataProps.article_content = articleContent;
     dataProps.intro = introducemd;
     dataProps.addTime = new Date(showDate).getTime() / 1000;
     dataProps.is_public = yn_public;
-    dataProps.is_top = 0;
+    console.log(yn_public);
+    console.log("is_pub" + dataProps.is_public);
+    // dataProps.is_top = 0;
+    // 如果为0，则说明是新增的文章
     if (articleId === 0) {
       dataProps.view_count = 0;
-      axios({
+      $http({
         method: "post",
         url: servicePath.addArticle,
         data: dataProps,
@@ -157,7 +203,7 @@ function AddArticle(props) {
       });
     } else {
       dataProps.id = articleId;
-      axios({
+      $http({
         method: "post",
         url: servicePath.updateArticle,
         header: { "Access-Control-Allow-Origin": "*" },
@@ -173,8 +219,8 @@ function AddArticle(props) {
     }
   };
 
-  const selectTypeHandler = (value) => {
-    setSelectType(value);
+  const selectTypeHandler = (value, option) => {
+    setSelectType(option.children);
   };
   // 获取带有格式的当前时间
   const getNowTime = () => {
@@ -183,7 +229,8 @@ function AddArticle(props) {
   };
   // 改变Swith 的状态后的函数 设置是否发布
   const changeSwithInfo = (checked) => {
-    checked ? (yn_public = 1) : (yn_public = 0);
+    checked ? setYnPublic(1) : setYnPublic(0);
+    console.log("状态改变后----" + yn_public);
   };
 
   return (
@@ -205,11 +252,11 @@ function AddArticle(props) {
               <Switch
                 checkedChildren="发"
                 unCheckedChildren="存"
-                defaultChecked
+                defaultChecked={yn_public ? true : false}
                 onChange={changeSwithInfo}
               />
-              <Select
-                value={selectedType}
+              <Select 
+                defaultValue={selectedType}
                 size="large"
                 onChange={selectTypeHandler}
               >
@@ -270,14 +317,16 @@ function AddArticle(props) {
               </Col>
               <Col span={12}>
                 <div className="date-select">
-                  <DatePicker
-                    placeholder="发布日期"
-                    size="large"
-                    value={moment(showDate, "YYYY-MM-DD")}
-                    onChange={(date, dateString) => {
-                      setShowDate(dateString);
-                    }}
-                  />
+                  <ConfigProvider locale={zhCN}>
+                    <DatePicker
+                      placeholder="发布日期"
+                      size="large"
+                      value={moment(showDate, "YYYY-MM-DD")}
+                      onChange={(date, dateString) => {
+                        setShowDate(dateString);
+                      }}
+                    />
+                  </ConfigProvider>
                 </div>
               </Col>
             </Row>
