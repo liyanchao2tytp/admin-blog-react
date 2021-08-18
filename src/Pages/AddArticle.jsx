@@ -2,7 +2,7 @@
  * @Author: lyc
  * @Date: 2020-10-28 21:33:58
  * @LastEditors: lyc
- * @LastEditTime: 2020-11-21 12:42:52
+ * @LastEditTime: 2021-08-17 09:43:49
  * @Description: file content
  */
 import React, { useEffect, useState } from "react";
@@ -62,6 +62,7 @@ function AddArticle(props) {
       getNowTime();
       setIsLoading(false);
     }
+    // eslint-disable-next-line
   }, []);
 
   /**
@@ -83,6 +84,7 @@ function AddArticle(props) {
       return hljs.highlightAuto(code).value;
     },
   });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const getArticleById = (id) => {
     axios({
       method: "get",
@@ -130,7 +132,12 @@ function AddArticle(props) {
       // } else {
       //   setTypeInfo(res.data.data);
       // }
+      
+      console.log("--------------",typeInfo);
+      console.log(res);
+
       setTypeInfo(res.data.data);
+   
     });
   };
 
@@ -156,6 +163,7 @@ function AddArticle(props) {
 
     let dataProps = {};
     // 根据selectedType的类型确定 type_id的值
+    // eslint-disable-next-line default-case
     switch (selectedType) {
       case Type.TYPE_ONE:
         dataProps.type_id = 1;
@@ -246,8 +254,8 @@ function AddArticle(props) {
                 defaultChecked={yn_public ? true : false}
                 onChange={changeSwithInfo}
               />
-              <Select
-                value={selectedType}
+              <Select 
+                defaultValue={selectedType}
                 size="large"
                 onChange={selectTypeHandler}
               >
