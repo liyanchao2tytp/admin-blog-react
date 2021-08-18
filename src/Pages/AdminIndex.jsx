@@ -15,8 +15,6 @@ import { Route } from "react-router-dom";
 import ArticleList from "./ArticleList";
 import RecycleList from "./RecycleList";
 import AdTypeModal from "../component/AdTypeModal";
-import Axios from "axios";
-import servicePath from "../config/apiUrl";
 const { Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
 
@@ -54,13 +52,9 @@ function AdminIndex(props) {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("openId");
-    Axios({
-      method: "POST",
-      url: servicePath.Logout,
-    }).then(() => {
-      props.history.push("/");
-    })
+    localStorage.removeItem("token");
+    props.history.push("/");
+   
   }
 
   return (

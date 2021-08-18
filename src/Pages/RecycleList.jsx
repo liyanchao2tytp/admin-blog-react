@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { List, Row, Col, Modal, message, Button, Space, Skeleton } from "antd";
-import axios from "axios";
 import servicePath from "../config/apiUrl";
 import "../static/css/ArticleList.css";
 import {
@@ -8,6 +7,7 @@ import {
   EditOutlined,
   InteractionFilled,
 } from "@ant-design/icons";
+import $http from "../axios/$http";
 const { confirm } = Modal;
 
 function RecycleList(props) {
@@ -18,7 +18,7 @@ function RecycleList(props) {
     getList();
   }, [refresh]);
   const getList = () => {
-    axios({
+    $http({
       method: "get",
       url: servicePath.getRecycleArticleList,
       header: { "Access-Control-Allow-Origin": "*" },
@@ -33,7 +33,7 @@ function RecycleList(props) {
       title: "确定要删除这篇博客文章吗？",
       content: "删除后，你的博客文章将在首页不再显示",
       onOk() {
-        axios(`${servicePath.delArticle}/${id}`, {
+        $http(`${servicePath.delArticle}/${id}`, {
           withCredentials: true,
         }).then((res) => {
           message.success("文章删除成功");
@@ -55,7 +55,7 @@ function RecycleList(props) {
       id,
       yn_goto_recycle: yn_id,
     };
-    axios({
+    $http({
       method: "post",
       url: `${servicePath.delArticleToRecycle}`,
       data: dataProps,

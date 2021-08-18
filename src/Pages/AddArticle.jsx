@@ -2,7 +2,7 @@
  * @Author: lyc
  * @Date: 2020-10-28 21:33:58
  * @LastEditors: lyc
- * @LastEditTime: 2021-08-17 09:43:49
+ * @LastEditTime: 2021-08-18 21:17:26
  * @Description: file content
  */
 import React, { useEffect, useState } from "react";
@@ -24,11 +24,11 @@ import {
   ConfigProvider,
 } from "antd";
 import zhCN from "antd/lib/locale/zh_CN";
-import axios from "axios";
 import servicePath from "../config/apiUrl.js";
 import { Type } from "../config/type.js";
 import moment from "moment";
 import "moment/locale/zh-cn";
+import $http from "../axios/$http";
 const { Option } = Select;
 const { TextArea } = Input;
 
@@ -46,8 +46,8 @@ function AddArticle(props) {
   const [isLoading, setIsLoading] = useState(true);
 
   const [yn_public, setYnPublic] = useState(1); // 暂存或者发布文章 0 是暂存  1 是发布
-  var yn_top = 0; // 是否置顶文章  0 不置顶   1 置顶
-  var id = props.match.params.id; //获取文章id，如果有就是修改，没有就是插入
+  let yn_top = 0; // 是否置顶文章  0 不置顶   1 置顶
+  let id = props.match.params.id; //获取文章id，如果有就是修改，没有就是插入
   /**
    * @description: 根据id是否存在来判断是插入还是更新
    * @param {*}
@@ -86,7 +86,7 @@ function AddArticle(props) {
   });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const getArticleById = (id) => {
-    axios({
+    $http({
       method: "get",
       url: `${servicePath.getArticleById}/${id}`,
       header: { "Access-Control-Allow-Origin": "*" },
@@ -121,7 +121,8 @@ function AddArticle(props) {
   };
 
   const getTypeInfo = () => {
-    axios({
+
+    $http({
       method: "get",
       url: servicePath.getTypeInfo,
       withCredentials: true,
@@ -187,7 +188,7 @@ function AddArticle(props) {
     // 如果为0，则说明是新增的文章
     if (articleId === 0) {
       dataProps.view_count = 0;
-      axios({
+      $http({
         method: "post",
         url: servicePath.addArticle,
         data: dataProps,
@@ -202,7 +203,7 @@ function AddArticle(props) {
       });
     } else {
       dataProps.id = articleId;
-      axios({
+      $http({
         method: "post",
         url: servicePath.updateArticle,
         header: { "Access-Control-Allow-Origin": "*" },

@@ -2,7 +2,7 @@
  * @Author: lyc
  * @Date: 2020-10-28 21:33:58
  * @LastEditors: lyc
- * @LastEditTime: 2021-08-17 11:11:19
+ * @LastEditTime: 2021-08-18 21:15:40
  * @Description: 文章列表
  */
 import React, { useState, useEffect } from "react";
@@ -19,7 +19,7 @@ import {
 } from "antd";
 import zhCN from 'antd/lib/locale/zh_CN';
 
-import axios from "axios";
+
 import servicePath from "../config/apiUrl";
 import "../static/css/ArticleList.css";
 import {
@@ -31,6 +31,7 @@ import {
   DislikeOutlined,
 } from "@ant-design/icons";
 import { Pagination } from "antd";
+import $http from "../axios/$http";
 const { confirm } = Modal;
 
 function ArticleList(props) {
@@ -47,7 +48,7 @@ function ArticleList(props) {
    * @description: 获取所有文章列表
    */
   const getList = () => {
-    axios({
+    $http({
       method: "get",
       url: `${servicePath.getArticleList}/1/10`,
       header: { "Access-Control-Allow-Origin": "*" },
@@ -68,7 +69,7 @@ function ArticleList(props) {
       title: "确定要删除这篇博客文章吗？",
       content: "删除后，你的博客文章将在首页不再显示",
       onOk() {
-        axios({
+        $http({
           method: "post",
           url: `${servicePath.delArticleToRecycle}`,
           data: {
@@ -96,7 +97,7 @@ function ArticleList(props) {
       id: aid,
       yn_public: yn_id,
     };
-    axios({
+    $http({
       method: "post",
       url: `${servicePath.alterPublicState}`,
       data: dataProps,
@@ -116,7 +117,7 @@ function ArticleList(props) {
       id: tid,
       yn_top: yn_id,
     };
-    axios({
+    $http({
       method: "post",
       url: `${servicePath.alterTopState}`,
       data: dataProps,
@@ -133,7 +134,7 @@ function ArticleList(props) {
    * @return {*}
    */
   const gotoPage = (page, pageSize) => {
-    axios({
+    $http({
       method: "get",
       url: `${servicePath.getArticleList}/${page}/${pageSize}`,
       header: { "Access-Control-Allow-Origin": "*" },

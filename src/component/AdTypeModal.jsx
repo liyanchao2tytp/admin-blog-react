@@ -2,13 +2,13 @@
  * @Author: lyc
  * @Date: 2021-02-16 18:23:39
  * @LastEditors: lyc
- * @LastEditTime: 2021-02-16 22:06:33
+ * @LastEditTime: 2021-08-18 21:13:47
  * @Description: 添加文章类型弹窗
  */
 import React from "react";
 import { Modal, Input, Button, message, Form } from "antd";
-import Axios from "axios";
 import servicePath from "../config/apiUrl";
+import $http from "../axios/$http";
 const layout = {
   labelCol: {
     span: 8,
@@ -20,7 +20,7 @@ const layout = {
 
 export default function AdTypeModal(props) {
   const onFinish = async (value) => {
-    const data = await Axios({
+    const data = await $http({
       method: "post",
       url: servicePath.addArticleType,
       data: value,
